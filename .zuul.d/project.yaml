@@ -1,0 +1,25 @@
+---
+- project:
+    check:
+      jobs:
+        - flasharray-ee-build-container-image
+        - flasharray-ee-tox-ansible-builder
+    gate:
+      jobs:
+        - flasharray-ee-build-container-image
+        - flasharray-ee-tox-ansible-builder
+    post:
+      jobs:
+        - flasharray-ee-upload-container-image:
+            vars:
+              upload_container_image_promote: false
+    release:
+      jobs:
+        - flasharray-ee-upload-container-image:
+            vars:
+              upload_container_image_promote: false
+    periodic:
+      jobs:
+        - flasharray-ee-upload-container-image:
+            vars:
+              upload_container_image_promote: false

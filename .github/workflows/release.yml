@@ -1,0 +1,41 @@
+name: Release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  release:
+    runs-on: ubuntu-20.04
+    name: Release
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install tox
+
+      - name: Build image
+        env:
+          DOCKER_BUILDKIT: 1
+        run: |
+          tox -e docker -- --tag=flasharray-ee:${{ github.event.release.tag_name }}
+          
+      - name: Retag image for navigator usage
+        run: |
+         docker tag flasharray-ee:${{ github.event.release.tag_name }} flasharray-ee:latest
+
+      - name: Push flasharray-ee
+        uses: redhat-actions/push-to-registry@v2.1.1
+        with:
+          image: flasharray-ee
+          tags: ${{ github.event.release.tag_name }} latest
+          registry: quay.io/purestorage/
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_TOKEN }}
