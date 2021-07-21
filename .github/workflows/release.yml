@@ -21,15 +21,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install tox
 
+      - name: Login to image registry
+        uses: docker/login-action@v1
+        with:
+          registry: registry.redhat.io
+          username: ${{ secrets.RH_REG_ACCT }}
+          password: ${{ secrets.RH_REG_TOKEN }}
+
       - name: Build image
         env:
           DOCKER_BUILDKIT: 1
         run: |
-          tox -e docker -- --tag=flasharray-ee:${{ github.event.release.tag_name }}
+          tox -e podman -- --tag=flasharray-ee:${{ github.event.release.tag_name }}
           
       - name: Retag image for navigator usage
         run: |
-         docker tag flasharray-ee:${{ github.event.release.tag_name }} flasharray-ee:latest
+         podman tag flasharray-ee:${{ github.event.release.tag_name }} flasharray-ee:latest
 
       - name: Push flasharray-ee
         uses: redhat-actions/push-to-registry@v2.1.1

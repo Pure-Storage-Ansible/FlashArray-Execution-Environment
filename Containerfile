@@ -1,5 +1,5 @@
-ARG EE_BASE_IMAGE=quay.io/aap/ansible-automation-platform-20-ee-supported-rhel8:latest
-ARG EE_BUILDER_IMAGE=quay.io/ansible/ansible-builder:latest
+ARG EE_BASE_IMAGE=registry.redhat.io/ansible-automation-platform-20-early-access/ee-minimal-rhel8:2.0.0-10
+ARG EE_BUILDER_IMAGE=registry.redhat.io/ansible-automation-platform-20-early-access/ansible-builder-rhel8:2.0.0-10
 
 FROM $EE_BASE_IMAGE as galaxy
 ARG ANSIBLE_GALAXY_CLI_COLLECTION_OPTS=
@@ -17,8 +17,7 @@ FROM $EE_BUILDER_IMAGE as builder
 
 COPY --from=galaxy /usr/share/ansible /usr/share/ansible
 
-ADD _build/bindep.txt bindep.txt
-RUN ansible-builder introspect --sanitize --user-bindep=bindep.txt --write-bindep=/tmp/src/bindep.txt --write-pip=/tmp/src/requirements.txt
+RUN ansible-builder introspect --sanitize --write-bindep=/tmp/src/bindep.txt --write-pip=/tmp/src/requirements.txt
 RUN assemble
 
 FROM $EE_BASE_IMAGE
