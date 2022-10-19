@@ -1,1 +1,7 @@
 git+https://github.com/ansible/ansible-builder.git@devel#egg=ansible-builder
+purestorage
+py-pure-client
+netaddr
+requests
+pycountry
+packaging
